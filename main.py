@@ -12,62 +12,45 @@ class App(ctk.CTk):
         self.selected_gender = None
         self.selected_protein = None
 
-        self.select_gender()
-        self.add_weight()
-        self.add_height()
-        self.add_age()
-        self.add_protein()
-        self.add_calculate_button()
-        self.add_result_display()
-
-    def select_gender(self):
+        # Gender Selection
         self.gender = ["Please select", "Male", "Female"]
-        
         self.gender_label = ctk.CTkLabel(self, text="Please select gender:")
         self.gender_label.grid(row=0, column=0, padx=20, pady=0, sticky="w")
-
         self.gender_menu = ctk.CTkOptionMenu(self, values=self.gender, command=self.update_gender)
         self.gender_menu.grid(row=0, column=1, padx=20, pady=10, sticky="ew")
 
-    def update_gender(self, value):
-        if value == "Please select":
-            self.selected_gender = None
-        else:
-            self.selected_gender = value
-
-    def add_weight(self):
+        # Weight Input
         self.weight_entry = ctk.CTkEntry(self, placeholder_text="Weight (in kg)")
         self.weight_entry.grid(row=3, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
 
-    def add_height(self):
+        # Height Input
         self.height_entry = ctk.CTkEntry(self, placeholder_text="Height (in cm)")
         self.height_entry.grid(row=4, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
 
-    def add_age(self):
+        # Age Input
         self.age_entry = ctk.CTkEntry(self, placeholder_text="Age")
         self.age_entry.grid(row=5, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
 
-    def add_protein(self):
+        # Protein Selection
         self.protein_per_g = ["Please select", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1", "1.1", "1.2", "1.3", "1.4", "1.5"]
         self.protein_label = ctk.CTkLabel(self, text="Protein g/lb Bodyweight:")
         self.protein_label.grid(row=6, column=0, padx=20, pady=0, sticky="w")
-
         self.protein_menu = ctk.CTkOptionMenu(self, values=self.protein_per_g, command=self.update_protein)
         self.protein_menu.grid(row=6, column=1, padx=20, pady=10, sticky="ew")
 
-    def update_protein(self, value):
-        if value == "Please select":
-            self.selected_protein = None
-        else:
-            self.selected_protein = float(value)
-
-    def add_calculate_button(self):
+        # Calculate Button
         self.calculate_button = ctk.CTkButton(self, text="Calculate BMR", command=self.calculate_bmr)
         self.calculate_button.grid(row=7, column=0, columnspan=2, padx=20, pady=20, sticky="ew")
 
-    def add_result_display(self):
+        # Result Display
         self.result_label = ctk.CTkLabel(self, text="")
         self.result_label.grid(row=8, column=0, columnspan=2, padx=20, pady=10, sticky="w")
+
+    def update_gender(self, value):
+        self.selected_gender = value if value != "Please select" else None
+
+    def update_protein(self, value):
+        self.selected_protein = float(value) if value != "Please select" else None
 
     def calculate_bmr(self):
         try:
