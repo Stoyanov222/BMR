@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import numpy as np
 
 class App(ctk.CTk):
     def __init__(self):
@@ -11,6 +12,7 @@ class App(ctk.CTk):
 
         self.selected_gender = None
         self.selected_protein = None
+        self.selected_calories = None
 
         # Gender Selection
         self.gender = ["Please select", "Male", "Female"]
@@ -31,26 +33,44 @@ class App(ctk.CTk):
         self.age_entry = ctk.CTkEntry(self, placeholder_text="Age")
         self.age_entry.grid(row=5, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
 
-        # Protein Selection
-        self.protein_per_g = ["Please select", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1", "1.1", "1.2", "1.3", "1.4", "1.5"]
+        # Protein Input
+        start = 0.3
+        stop = 1.5
+        step = 0.1
+
+        self.protein_per_g = ["Please select"] + [f"{i:.1f}" for i in np.arange(start, stop + step, step)]
         self.protein_label = ctk.CTkLabel(self, text="Protein g/lb Bodyweight:")
         self.protein_label.grid(row=6, column=0, padx=20, pady=0, sticky="w")
         self.protein_menu = ctk.CTkOptionMenu(self, values=self.protein_per_g, command=self.update_protein)
         self.protein_menu.grid(row=6, column=1, padx=20, pady=10, sticky="ew")
 
+        # Weight Gain/Loss Input in Calories
+        start = -1000
+        stop = 1400
+        step = 100
+
+        self.calories_change = ["Please select"] + [f"{i:.1f}" for i in np.arange(start, stop + step, step)]
+        self.calories_label = ctk.CTkLabel(self, text="Select Additional daily calories for gain or reduce for weight loss:")
+        self.calories_label.grid(row=7, column=0, padx=20, pady=0, sticky="w")
+        self.calories_menu = ctk.CTkOptionMenu(self, values=self.calories_change, command=self.update_calories)
+        self.calories_menu.grid(row=7, column=1, padx=20, pady=10, sticky="ew")
+
         # Calculate Button
         self.calculate_button = ctk.CTkButton(self, text="Calculate BMR", command=self.calculate_bmr)
-        self.calculate_button.grid(row=7, column=0, columnspan=2, padx=20, pady=20, sticky="ew")
+        self.calculate_button.grid(row=8, column=0, columnspan=2, padx=20, pady=20, sticky="ew")
 
         # Result Display
         self.result_label = ctk.CTkLabel(self, text="")
-        self.result_label.grid(row=8, column=0, columnspan=2, padx=20, pady=10, sticky="w")
+        self.result_label.grid(row=9, column=0, columnspan=2, padx=20, pady=10, sticky="w")
 
     def update_gender(self, value):
         self.selected_gender = value if value != "Please select" else None
 
     def update_protein(self, value):
         self.selected_protein = float(value) if value != "Please select" else None
+
+    def update_calories(self, value):
+        self.selected_calories = float(value) if value != "Please select" else None
 
     def calculate_bmr(self):
         try:
