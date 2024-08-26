@@ -91,6 +91,10 @@ class App(ctk.CTk):
                 self.result_label.configure(text="Please select a protein value.")
                 return
 
+            if self.selected_calories is None:
+                self.result_label.configure(text="Please select calories.")
+                return  
+            
             if self.selected_gender == "Male":
                 bmr = 66 + (13.7 * weight) + (5 * height) - (6.8 * age)
             elif self.selected_gender == "Female":
