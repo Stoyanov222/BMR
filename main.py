@@ -6,7 +6,7 @@ class App(ctk.CTk):
         super().__init__()
 
         self.title("BMR Calculator")
-        self.geometry("800x500")
+        self.geometry("800x800")
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
@@ -59,9 +59,13 @@ class App(ctk.CTk):
         self.calculate_button = ctk.CTkButton(self, text="Calculate BMR", command=self.calculate_bmr)
         self.calculate_button.grid(row=8, column=0, columnspan=2, padx=20, pady=20, sticky="ew")
 
+        # Reset Button
+        self.reset_button = ctk.CTkButton(self, text="Reset", command=self.reset_fields)
+        self.reset_button.grid(row=9, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
+
         # Result Display
         self.result_label = ctk.CTkLabel(self, text="")
-        self.result_label.grid(row=9, column=0, columnspan=2, padx=20, pady=10, sticky="w")
+        self.result_label.grid(row=10, column=0, columnspan=2, padx=20, pady=10, sticky="w")
 
     def update_gender(self, value):
         self.selected_gender = value if value != "Please select" else None
@@ -77,6 +81,7 @@ class App(ctk.CTk):
             weight = float(self.weight_entry.get())
             height = float(self.height_entry.get())
             age = int(self.age_entry.get())
+            calories_adjust = self.selected_calories
             
             if self.selected_gender is None:
                 self.result_label.configure(text="Please select a gender.")
@@ -90,10 +95,40 @@ class App(ctk.CTk):
                 bmr = 66 + (13.7 * weight) + (5 * height) - (6.8 * age)
             elif self.selected_gender == "Female":
                 bmr = 655 + (9.6 * weight) + (1.8 * height) - (4.7 * age)
+            
+            sedentery_cals = bmr * 1.2 + calories_adjust
+            light_cals = bmr * 1.35 + calories_adjust
+            moderate_cals = bmr * 1.5 + calories_adjust
+            high_cals = bmr * 1.68 + calories_adjust
 
-            self.result_label.configure(text=f"Your BMR is: {bmr:.2f} calories/day")
+            result_text = (
+            f"Your BMR is: {bmr:.2f} calories/day\n\n"
+            f"Caloric needs based on activity level:\n"
+            f"Sedentary (little or no exercise): {sedentery_cals:.2f} calories/day\n"
+            f"Lightly active (light exercise/sports 1-3 days/week): {light_cals:.2f} calories/day\n"
+            f"Moderately active (moderate exercise/sports 3-5 days/week): {moderate_cals:.2f} calories/day\n"
+            f"Very active (hard exercise/sports 6-7 days a week): {high_cals:.2f} calories/day"
+        )
+        
+            self.result_label.configure(text=result_text)
         except ValueError:
             self.result_label.configure(text="Please enter valid data.")
+        
+    def reset_fields(self):
+        # Reset all input fields and selections
+        self.gender_menu.set("Please select")
+        self.weight_entry.delete(0, 'end')
+        self.height_entry.delete(0, 'end')
+        self.age_entry.delete(0, 'end')
+        self.protein_menu.set("Please select")
+        self.calories_menu.set("Please select")
+        self.result_label.configure(text="")
+        
+        # Reset stored values
+        self.selected_gender = None
+        self.selected_protein = None
+        self.selected_calories = None
+
 
 if __name__ == "__main__":
     app = App()
