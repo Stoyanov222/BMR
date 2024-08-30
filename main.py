@@ -1,18 +1,25 @@
 import customtkinter as ctk
 import numpy as np
+import pandas as pd
+from tkinter import simpledialog
 
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
+                # Set global appearance and theme
+        ctk.set_appearance_mode("dark")
+        ctk.set_default_color_theme("dark-blue")
+
         self.title("BMR Calculator")
-        self.geometry("800x800")
+        self.geometry("600x600")
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
         self.selected_gender = None
         self.selected_protein = None
         self.selected_calories = None
+        self.result_text = None
 
         # Gender Selection
         self.gender = ["Please select", "Male", "Female"]
@@ -59,14 +66,17 @@ class App(ctk.CTk):
         self.calculate_button = ctk.CTkButton(self, text="Calculate BMR", command=self.calculate_bmr)
         self.calculate_button.grid(row=8, column=0, columnspan=2, padx=20, pady=20, sticky="ew")
 
+        # Export Data Button
+        self.reset_button = ctk.CTkButton(self, text="Export Data", command=self.export_result)
+        self.reset_button.grid(row=9, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
+
         # Reset Button
         self.reset_button = ctk.CTkButton(self, text="Reset", command=self.reset_fields)
-        self.reset_button.grid(row=9, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
+        self.reset_button.grid(row=10, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
 
         # Result Display
         self.result_label = ctk.CTkLabel(self, text="")
-        self.result_label.grid(row=10, column=0, columnspan=2, padx=20, pady=10, sticky="w")
-
+        self.result_label.grid(row=11, column=0, columnspan=2, padx=20, pady=10, sticky="w")
     def update_gender(self, value):
         self.selected_gender = value if value != "Please select" else None
 
@@ -75,6 +85,35 @@ class App(ctk.CTk):
 
     def update_calories(self, value):
         self.selected_calories = float(value) if value != "Please select" else None
+
+    def update_result(self, value):
+        self.result_text = value if value else None
+
+    def export_result(self):
+        if self.result_text:
+            # Prompt the user to enter a file name
+            file_name = simpledialog.askstring("Input", "Enter the file name (without extension):", parent=self)
+            
+            if file_name:
+                file_name = file_name.strip() + ".xlsx"  # Ensure the file has .xlsx extension
+
+                # Parse the result text into a list of dictionaries
+                data = []
+                for line in self.result_text.splitlines():
+                    if ':' in line:
+                        key, value = line.split(':', 1)
+                        data.append({"Description": key.strip(), "Value": value.strip()})
+
+                # Create a DataFrame from the parsed data
+                df = pd.DataFrame(data)
+
+                # Export the DataFrame to an Excel file with the user-provided name
+                df.to_excel(file_name, index=False)
+                self.result_label.configure(text=f"Data has been exported to {file_name}!")
+            else:
+                self.result_label.configure(text="File name cannot be empty!")
+        else:
+            self.result_label.configure(text="There is no data to be exported!")
 
     def calculate_bmr(self):
         try:
@@ -105,7 +144,7 @@ class App(ctk.CTk):
             moderate_cals = bmr * 1.5 + calories_adjust
             high_cals = bmr * 1.68 + calories_adjust
 
-            result_text = (
+            self.result_text = (
             f"Your BMR is: {bmr:.2f} calories/day\n\n"
             f"Caloric needs based on activity level:\n"
             f"Sedentary (little or no exercise): {sedentery_cals:.2f} calories/day\n"
@@ -113,11 +152,11 @@ class App(ctk.CTk):
             f"Moderately active (moderate exercise/sports 3-5 days/week): {moderate_cals:.2f} calories/day\n"
             f"Very active (hard exercise/sports 6-7 days a week): {high_cals:.2f} calories/day"
         )
-        
-            self.result_label.configure(text=result_text)
+            self.result_label.configure(text=self.result_text)
+            self.update_result(self.result_text)
         except ValueError:
             self.result_label.configure(text="Please enter valid data.")
-        
+
     def reset_fields(self):
         # Reset all input fields and selections
         self.gender_menu.set("Please select")
@@ -132,7 +171,7 @@ class App(ctk.CTk):
         self.selected_gender = None
         self.selected_protein = None
         self.selected_calories = None
-
+        self.result_text = None
 
 if __name__ == "__main__":
     app = App()
