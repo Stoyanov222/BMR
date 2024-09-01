@@ -3,3 +3,4 @@ app_icon.ico
 dist
 build
 main.spec
+test.py
