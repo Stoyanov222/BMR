@@ -7,12 +7,12 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-                # Set global appearance and theme
+        # Set global appearance and theme
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("dark-blue")
 
         self.title("BMR Calculator")
-        self.geometry("600x600")
+        self.geometry("600x700")
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
@@ -21,6 +21,9 @@ class App(ctk.CTk):
         self.selected_calories = None
         self.result_text = None
 
+        self.create_widgets()
+
+    def create_widgets(self):
         # Gender Selection
         self.gender = ["Please select", "Male", "Female"]
         self.gender_label = ctk.CTkLabel(self, text="Please select gender:")
@@ -67,8 +70,8 @@ class App(ctk.CTk):
         self.calculate_button.grid(row=8, column=0, columnspan=2, padx=20, pady=20, sticky="ew")
 
         # Export Data Button
-        self.reset_button = ctk.CTkButton(self, text="Export Data", command=self.export_result)
-        self.reset_button.grid(row=9, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
+        self.export_button = ctk.CTkButton(self, text="Export Data", command=self.export_result)
+        self.export_button.grid(row=9, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
 
         # Reset Button
         self.reset_button = ctk.CTkButton(self, text="Reset", command=self.reset_fields)
@@ -77,6 +80,7 @@ class App(ctk.CTk):
         # Result Display
         self.result_label = ctk.CTkLabel(self, text="")
         self.result_label.grid(row=11, column=0, columnspan=2, padx=20, pady=10, sticky="w")
+
     def update_gender(self, value):
         self.selected_gender = value if value != "Please select" else None
 
@@ -118,21 +122,14 @@ class App(ctk.CTk):
     def calculate_bmr(self):
         try:
             weight = float(self.weight_entry.get())
+            weight_lb = weight * 2.2
             height = float(self.height_entry.get())
             age = int(self.age_entry.get())
             calories_adjust = self.selected_calories
-            
-            if self.selected_gender is None:
-                self.result_label.configure(text="Please select a gender.")
-                return
+            protein = self.selected_protein
 
-            if self.selected_protein is None:
-                self.result_label.configure(text="Please select a protein value.")
+            if not self.validate_inputs(weight, height, age):
                 return
-
-            if self.selected_calories is None:
-                self.result_label.configure(text="Please select calories.")
-                return  
             
             if self.selected_gender == "Male":
                 bmr = 66 + (13.7 * weight) + (5 * height) - (6.8 * age)
@@ -143,6 +140,8 @@ class App(ctk.CTk):
             light_cals = bmr * 1.35 + calories_adjust
             moderate_cals = bmr * 1.5 + calories_adjust
             high_cals = bmr * 1.68 + calories_adjust
+            protein_per_day = weight_lb * protein
+            protein_per_day_cals = protein_per_day * 4
 
             self.result_text = (
             f"Your BMR is: {bmr:.2f} calories/day\n\n"
@@ -150,14 +149,44 @@ class App(ctk.CTk):
             f"Sedentary (little or no exercise): {sedentery_cals:.2f} calories/day\n"
             f"Lightly active (light exercise/sports 1-3 days/week): {light_cals:.2f} calories/day\n"
             f"Moderately active (moderate exercise/sports 3-5 days/week): {moderate_cals:.2f} calories/day\n"
-            f"Very active (hard exercise/sports 6-7 days a week): {high_cals:.2f} calories/day"
+            f"Very active (hard exercise/sports 6-7 days a week): {high_cals:.2f} calories/day\n"
+            f"Protein per day: {round(protein_per_day)}g / {round(protein_per_day_cals)} calories\n"
+            f"Your calories deficit/surplus is: {int(calories_adjust)} calories"
         )
             self.result_label.configure(text=self.result_text)
             self.update_result(self.result_text)
         except ValueError:
             self.result_label.configure(text="Please enter valid data.")
+    
+    def validate_inputs(self, weight, height, age):
+        if weight is None or weight < 0:
+            self.result_label.configure(text="Weight can't be negative or invalid!")
+            return False
+
+        if height is None or height < 0:
+            self.result_label.configure(text="Height can't be negative or invalid!")
+            return False
+
+        if age is None or age <= 0:
+            self.result_label.configure(text="Age must be a positive integer!")
+            return False
+
+        if self.selected_gender is None:
+            self.result_label.configure(text="Please select a gender.")
+            return False
+
+        if self.selected_protein is None:
+            self.result_label.configure(text="Please select a protein value.")
+            return False
+
+        if self.selected_calories is None:
+            self.result_label.configure(text="Please select calories.")
+            return False
+
+        return True
 
     def reset_fields(self):
+        
         # Reset all input fields and selections
         self.gender_menu.set("Please select")
         self.weight_entry.delete(0, 'end')
