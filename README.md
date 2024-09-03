@@ -20,4 +20,4 @@ The project is still in progress, and I’m actively working on adding and refin
 To run the application, you need Python installed along with the required libraries. You can install the necessary dependencies using:
 
 ```bash
-pip install customtkinter numpy pandas
+pip install customtkinter numpy pandas tkinter
