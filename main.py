@@ -16,6 +16,7 @@ class App(ctk.CTk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
+        self.selected_weight = 0
         self.selected_gender = None
         self.selected_protein = None
         self.selected_calories = None
@@ -23,7 +24,9 @@ class App(ctk.CTk):
 
         self.create_widgets()
 
+
     def create_widgets(self):
+
         # Gender Selection
         self.gender = ["Please select", "Male", "Female"]
         self.gender_label = ctk.CTkLabel(self, text="Please select gender:")
@@ -31,19 +34,21 @@ class App(ctk.CTk):
         self.gender_menu = ctk.CTkOptionMenu(self, values=self.gender, command=self.update_gender)
         self.gender_menu.grid(row=0, column=1, padx=20, pady=10, sticky="ew")
 
-        # Weight Input
-        self.weight_entry = ctk.CTkEntry(self, placeholder_text="Weight (in kg)")
-        self.weight_entry.grid(row=3, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
+        # Weight Input with slider selection
+        self.weight_entry = ctk.CTkLabel(self, text="Select Weight:")
+        self.weight_entry.grid(row=2, column=0, padx=20, pady=0, sticky="w")
+        self.weight_slider = ctk.CTkSlider(self, from_=20, to=200, command=self.update_weight)
+        self.weight_slider.grid(row=3, column=0, columnspan=2, padx=20, pady=20, sticky="ew") 
 
-        # Height Input
+        # Height Input - todo: Update it with slider selection
         self.height_entry = ctk.CTkEntry(self, placeholder_text="Height (in cm)")
         self.height_entry.grid(row=4, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
 
-        # Age Input
+        # Age Input - todo: Update it with slider selection
         self.age_entry = ctk.CTkEntry(self, placeholder_text="Age")
         self.age_entry.grid(row=5, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
 
-        # Protein Input
+        # Protein Input - todo: Update it with slider selection
         start = 0.3
         stop = 1.5
         step = 0.1
@@ -54,7 +59,7 @@ class App(ctk.CTk):
         self.protein_menu = ctk.CTkOptionMenu(self, values=self.protein_per_g, command=self.update_protein)
         self.protein_menu.grid(row=6, column=1, padx=20, pady=10, sticky="ew")
 
-        # Weight Gain/Loss Input in Calories
+        # Weight Gain/Loss Input in Calories - todo: Update it with slider selection
         start = -1000
         stop = 1400
         step = 100
@@ -80,6 +85,10 @@ class App(ctk.CTk):
         # Result Display
         self.result_label = ctk.CTkLabel(self, text="")
         self.result_label.grid(row=11, column=0, columnspan=2, padx=20, pady=10, sticky="w")
+
+    def update_weight(self, value):
+        self.selected_weight = value if value else None
+        self.weight_entry.configure(text=f"Selected weight: {round(self.selected_weight)} kg")
 
     def update_gender(self, value):
         self.selected_gender = value if value != "Please select" else None
@@ -121,7 +130,7 @@ class App(ctk.CTk):
 
     def calculate_bmr(self):
         try:
-            weight = float(self.weight_entry.get())
+            weight = self.selected_weight
             weight_lb = weight * 2.2
             height = float(self.height_entry.get())
             age = int(self.age_entry.get())
@@ -144,12 +153,12 @@ class App(ctk.CTk):
             protein_per_day_cals = protein_per_day * 4
 
             self.result_text = (
-            f"Your BMR is: {bmr:.2f} calories/day\n\n"
+            f"Your BMR is: {round(bmr)} calories/day\n\n"
             f"Caloric needs based on activity level:\n"
-            f"Sedentary (little or no exercise): {sedentery_cals:.2f} calories/day\n"
-            f"Lightly active (light exercise/sports 1-3 days/week): {light_cals:.2f} calories/day\n"
-            f"Moderately active (moderate exercise/sports 3-5 days/week): {moderate_cals:.2f} calories/day\n"
-            f"Very active (hard exercise/sports 6-7 days a week): {high_cals:.2f} calories/day\n"
+            f"Sedentary (little or no exercise): {round(sedentery_cals)} calories/day\n"
+            f"Lightly active (light exercise/sports 1-3 days/week): {round(light_cals)} calories/day\n"
+            f"Moderately active (moderate exercise/sports 3-5 days/week): {round(moderate_cals)} calories/day\n"
+            f"Very active (hard exercise/sports 6-7 days a week): {round(high_cals)} calories/day\n"
             f"Protein per day: {round(protein_per_day)}g / {round(protein_per_day_cals)} calories\n"
             f"Your calories deficit/surplus is: {int(calories_adjust)} calories"
         )
@@ -189,7 +198,6 @@ class App(ctk.CTk):
         
         # Reset all input fields and selections
         self.gender_menu.set("Please select")
-        self.weight_entry.delete(0, 'end')
         self.height_entry.delete(0, 'end')
         self.age_entry.delete(0, 'end')
         self.protein_menu.set("Please select")
@@ -197,6 +205,10 @@ class App(ctk.CTk):
         self.result_label.configure(text="")
         
         # Reset stored values
+        self.weight_slider.set(110)
+        self.selected_weight = 0
+        self.weight_entry.configure(text=f"Select Weight:")
+
         self.selected_gender = None
         self.selected_protein = None
         self.selected_calories = None
@@ -205,3 +217,5 @@ class App(ctk.CTk):
 if __name__ == "__main__":
     app = App()
     app.mainloop()
+
+        
