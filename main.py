@@ -16,7 +16,7 @@ class App(ctk.CTk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
-        self.selected_weight = 0
+        self.selected_weight = None
         self.selected_gender = None
         self.selected_protein = None
         self.selected_calories = None
@@ -39,6 +39,7 @@ class App(ctk.CTk):
         self.weight_entry.grid(row=2, column=0, padx=20, pady=0, sticky="w")
         self.weight_slider = ctk.CTkSlider(self, from_=20, to=200, command=self.update_weight)
         self.weight_slider.grid(row=3, column=0, columnspan=2, padx=20, pady=20, sticky="ew") 
+        self.weight_slider.set(60)
 
         # Height Input - todo: Update it with slider selection
         self.height_entry = ctk.CTkEntry(self, placeholder_text="Height (in cm)")
@@ -87,7 +88,7 @@ class App(ctk.CTk):
         self.result_label.grid(row=11, column=0, columnspan=2, padx=20, pady=10, sticky="w")
 
     def update_weight(self, value):
-        self.selected_weight = value if value else None
+        self.selected_weight = value if value else 0
         self.weight_entry.configure(text=f"Selected weight: {round(self.selected_weight)} kg")
 
     def update_gender(self, value):
@@ -130,12 +131,12 @@ class App(ctk.CTk):
 
     def calculate_bmr(self):
         try:
-            weight = self.selected_weight
+            weight = self.selected_weight if self.selected_weight is not None else 0
             weight_lb = weight * 2.2
             height = float(self.height_entry.get())
             age = int(self.age_entry.get())
-            calories_adjust = self.selected_calories
-            protein = self.selected_protein
+            calories_adjust = self.selected_calories if self.selected_calories is not None else 0
+            protein = self.selected_protein if self.selected_protein is not None else 0
 
             if not self.validate_inputs(weight, height, age):
                 return
@@ -205,8 +206,8 @@ class App(ctk.CTk):
         self.result_label.configure(text="")
         
         # Reset stored values
-        self.weight_slider.set(110)
-        self.selected_weight = 0
+        self.weight_slider.set(60)
+        self.selected_weight = None
         self.weight_entry.configure(text=f"Select Weight:")
 
         self.selected_gender = None
