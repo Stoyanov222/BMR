@@ -5,3 +5,5 @@ build
 main.spec
 test.py
 settings.json
+config.json
+__pycache__
