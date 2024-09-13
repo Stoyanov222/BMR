@@ -10,6 +10,8 @@ I’m currently developing a BMR (Basal Metabolic Rate) Calculator application u
 - **BMR Calculation:** Computes BMR and adjusts for various activity levels to estimate daily caloric needs.
 - **Data Export:** Feature to export results to an Excel file for tracking and analysis.
 - **Input Validation:** Ensures accurate data entry with built-in validation and the ability to reset fields.
+- **Database Integration:** Saves and loads data from a SQLiteCloud database.
+- **Theme Change**
 
 ## Current Status
 
@@ -20,4 +22,5 @@ The project is still in progress, and I’m actively working on adding and refin
 To run the application, you need Python installed along with the required libraries. You can install the necessary dependencies using:
 
 ```bash
-pip install customtkinter numpy pandas tkinter
+pip install customtkinter numpy pandas sqlitecloud
+
