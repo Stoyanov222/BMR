@@ -10,11 +10,13 @@ class App(ctk.CTk):
         super().__init__()
 
         # Set global appearance and theme
-        ctk.set_appearance_mode("dark")
+        ctk.set_appearance_mode("Dark")
         ctk.set_default_color_theme("dark-blue")
+        self.theme_switch_button = ctk.CTkButton(self, text="Switch Theme", command=self.switch_theme)
+        self.theme_switch_button.grid(row=15, column=0, columnspan=2, padx=20, pady=10, sticky="e")
 
         self.title("BMR Calculator")
-        self.geometry("600x800")
+        self.geometry("600x850")
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
@@ -28,6 +30,11 @@ class App(ctk.CTk):
         self.db_connection = get_db_connection()
 
         self.create_widgets()
+
+    def switch_theme(self):
+        current_mode = ctk.get_appearance_mode()
+        new_mode = "Dark" if current_mode == "Light" else "Light"
+        ctk.set_appearance_mode(new_mode)
 
     def create_widgets(self):
 
@@ -120,10 +127,14 @@ class App(ctk.CTk):
         self.load_button.grid(row=13, column=0, columnspan=2,
                               padx=20, pady=10, sticky="ew")
 
-        # Result Display
-        self.result_label = ctk.CTkLabel(self, text="")
-        self.result_label.grid(
-            row=14, column=0, columnspan=2, padx=20, pady=10, sticky="w")
+        # Result Display (Whiteboard area)
+        self.result_label = ctk.CTkLabel(self, text="", fg_color="GREY", bg_color="black", font=("Arial", 13), anchor="w", justify="left")
+        self.result_label.grid(row=14, column=0, columnspan=2, padx=20, pady=10, sticky="nsew")
+
+        # Configure row and column weights to make the result area expand
+        self.grid_rowconfigure(14, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
 
     def update_weight(self, value):
         self.selected_weight = value if value else 0
