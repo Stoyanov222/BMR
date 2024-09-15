@@ -1,9 +1,4 @@
-.venv/
-app_icon.ico
-dist
-build
-main.spec
+venv
+.env
 test.py
-settings.json
-config.json
 __pycache__

@@ -6,9 +6,9 @@ def get_db_connection():
     """Create and return the database connection using the configuration."""
     config = load_config()
 
-    connection_string = config["sqlitecloud"]["connection_string"]
-    apikey = config["sqlitecloud"]["apikey"]
-    db_name = config["sqlitecloud"]["db_name"]
+    connection_string = config["connection_string"]
+    apikey = config["apikey"]
+    db_name = config["db_name"]
 
     full_connection_string = f"{connection_string}?apikey={apikey}"
     conn = sqlitecloud.connect(full_connection_string)
